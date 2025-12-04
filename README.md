@@ -42,7 +42,7 @@ https://github.com/SmartLingShu/lingshu-cloud
 
 https://github.com/SmartLingShu/lingshu-vue3
 
-https://github.com/SmartLingShu/lingshu-info
+https://github.com/SmartLingShu/lingshu-mini
 
 - 管理后台：Vue 3、Element-Plus、TypeScript
 - 小程序端：UniApp、微信小程序原生组件
