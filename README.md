@@ -1,15 +1,16 @@
 <div align="center">
-   <img alt="logo" width="100" height="100" src="https://foruda.gitee.com/images/1733417239320800627/3c5290fe_716974.png">
+   <img alt="logo" width="250" height="250" src="image/logo.jpg">
    <h2>智习灵枢：AI Agent自习室预约系统</h2>
    <h3>LingShu AI: Smart Study Reservoir</h3>
    <img alt="Java" src="https://img.shields.io/badge/Java-17-brightgreen.svg"/>
-   <img alt="SpringBoot" src="https://img.shields.io/badge/SpringBoot-3.3.6-green.svg"/>
+   <img alt="SpringBoot" src="https://img.shields.io/badge/SpringBoot-3.5.8-green.svg"/>
    <img alt="Vue" src="https://img.shields.io/badge/Vue-3.x-blue.svg"/>
    <img alt="UniApp" src="https://img.shields.io/badge/UniApp-微信小程序-07C160.svg"/>
    <br/>
-   <img alt="License" src="https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg"/>
+   <img alt="License" src="https://img.shields.io/badge/license-MIT%20-blue.svg"/>
    <img alt="Architecture" src="https://img.shields.io/badge/架构-单体→微服务-orange.svg"/>
 </div>
+
 
 ![](https://raw.gitmirror.com/youlaitech/image/main/docs/rainbow.png)
 
@@ -31,8 +32,8 @@
 
 https://github.com/SmartLingShu/lingshu-cloud
 
-- 核心框架：Spring Boot 3.3.6、Spring Security 6、JWT
-- 数据层：MyBatis-Plus、MySQL 8、Redis
+- 核心框架：Spring Boot 3.5.8、Spring Security 6、JWT
+- 数据层：MyBatis-Plus、MySQL 8、Redis8
 - 接口文档：Knife4j、Swagger
 - 定时任务：XXL-Job
 - 消息队列：RabbitMQ / RocketMQ
@@ -344,7 +345,7 @@ lingshu-study-reservoir-java
 
 - JDK 17+
 - MySQL 8.0+
-- Redis 5.0+
+- Redis 8.0+
 - Maven 3.6+
 - Node.js 16+ (前端项目)
 
@@ -462,7 +463,7 @@ docker-compose -f docker-deploys/compose-prod.yml up -d
 
 ## 📄 开源协议
 
-本项目基于 [Apache License 2.0](LICENSE) 开源协议。
+本项目基于 [MIT](LICENSE) 开源协议。
 
 ## 💖 致谢
 
