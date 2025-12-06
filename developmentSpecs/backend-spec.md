@@ -99,8 +99,10 @@ private Set<String> userIdSet;
 
 ```java
 // 数据库字段: user_name -> Java 属性: userName
-// 数据库字段: created_time -> Java 属性: createdTime
-// 数据库字段: is_deleted -> Java 属性: deleted (布尔类型去掉 is)
+// 数据库字段: create_time -> Java 属性: createTime
+// 数据库字段: update_time -> Java 属性: updateTime
+// 数据库字段: deleted -> Java 属性: deleted
+// 【注意】数据库字段禁止使用 is_ 前缀，参考数据库规范
 ```
 
 ---
@@ -253,8 +255,9 @@ public class ReservationServiceImpl implements ReservationService {
 
 ```java
 // Entity - 数据库实体，与表结构一一对应
+// 【注意】表名禁止使用 t_ 前缀
 @Data
-@TableName("t_reservation")
+@TableName("reservation")
 public class Reservation {
     
     @TableId(type = IdType.ASSIGN_ID)
@@ -271,10 +274,10 @@ public class Reservation {
     private Integer status;
     
     @TableField(fill = FieldFill.INSERT)
-    private LocalDateTime createdTime;
+    private LocalDateTime createTime;
     
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private LocalDateTime updatedTime;
+    private LocalDateTime updateTime;
     
     @TableLogic
     private Integer deleted;
@@ -833,48 +836,48 @@ private volatile Singleton instance;
 #### 7.1.2 反面案例（禁止）
 
 ```xml
-<!-- ❌ 错误示例1：JOIN 多表关联 -->
+<!-- ❗ 错误示例1：JOIN 多表关联 -->
 <select id="selectReservationWithUser" resultType="ReservationVO">
     SELECT r.*, u.user_name, u.avatar, c.classroom_name
-    FROM t_reservation r
-    INNER JOIN t_user u ON r.user_id = u.id
-    INNER JOIN t_classroom c ON r.classroom_id = c.id
+    FROM reservation r
+    INNER JOIN sys_user u ON r.user_id = u.id
+    INNER JOIN classroom c ON r.classroom_id = c.id
     WHERE r.id = #{id}
 </select>
 
-<!-- ❌ 错误示例2：UNION 联合查询 -->
+<!-- ❗ 错误示例2：UNION 联合查询 -->
 <select id="selectAllTags" resultType="TagVO">
     SELECT id, name, user_id, 0 AS is_collaborative
-    FROM t_personal_tags
+    FROM personal_tag
     WHERE user_id = #{userId}
     UNION ALL
     SELECT t.id, t.name, t.user_id, 1 AS is_collaborative
-    FROM t_personal_tags t
-    INNER JOIN t_collaborator_relation cr ON cr.inviter_user_id = t.user_id
+    FROM personal_tag t
+    INNER JOIN collaborator_relation cr ON cr.inviter_user_id = t.user_id
     WHERE cr.invited_user_id = #{currentUserId}
 </select>
 
-<!-- ❌ 错误示例3：WHERE 中使用函数（索引失效） -->
+<!-- ❗ 错误示例3：WHERE 中使用函数（索引失效） -->
 <select id="selectByDate" resultType="Reservation">
-    SELECT * FROM t_reservation
-    WHERE DATE(created_time) = #{date}
+    SELECT * FROM reservation
+    WHERE DATE(create_time) = #{date}
     AND YEAR(start_time) = #{year}
 </select>
 
-<!-- ❌ 错误示例4：复杂子查询 -->
+<!-- ❗ 错误示例4：复杂子查询 -->
 <select id="selectActiveUsers" resultType="User">
-    SELECT * FROM t_user
+    SELECT * FROM sys_user
     WHERE id IN (
-        SELECT DISTINCT user_id FROM t_reservation
-        WHERE status = 1 AND created_time > (
-            SELECT MAX(created_time) - INTERVAL 7 DAY FROM t_reservation
+        SELECT DISTINCT user_id FROM reservation
+        WHERE status = 1 AND create_time > (
+            SELECT MAX(create_time) - INTERVAL 7 DAY FROM reservation
         )
     )
 </select>
 
-<!-- ❌ 错误示例5：LOCATE/FIND_IN_SET 等函数 -->
+<!-- ❗ 错误示例5：LOCATE/FIND_IN_SET 等函数 -->
 <select id="selectByTagIds" resultType="Tag">
-    SELECT * FROM t_tag
+    SELECT * FROM tag
     WHERE LOCATE(CONCAT(',', id, ','), #{tagIds}) > 0
 </select>
 ```
@@ -1003,8 +1006,8 @@ public List<Reservation> listByDate(LocalDate date) {
 ```xml
 <!-- ✅ 正确的 SQL：简单单表查询 -->
 <select id="selectByCondition" resultType="Reservation">
-    SELECT id, user_id, seat_id, classroom_id, start_time, end_time, status, created_time
-    FROM t_reservation
+    SELECT id, user_id, seat_id, classroom_id, start_time, end_time, status, create_time
+    FROM reservation
     WHERE deleted = 0
     <if test="userId != null">
         AND user_id = #{userId}
@@ -1012,22 +1015,22 @@ public List<Reservation> listByDate(LocalDate date) {
     <if test="status != null">
         AND status = #{status}
     </if>
-    ORDER BY created_time DESC
+    ORDER BY create_time DESC
 </select>
 
 <!-- ✅ 正确的时间范围查询 -->
 <select id="selectByTimeRange" resultType="Reservation">
     SELECT id, user_id, seat_id, start_time, end_time, status
-    FROM t_reservation
+    FROM reservation
     WHERE deleted = 0
-    AND created_time >= #{startTime}
-    AND created_time &lt; #{endTime}
+    AND create_time >= #{startTime}
+    AND create_time &lt; #{endTime}
 </select>
 
 <!-- ✅ 正确的批量 ID 查询 -->
 <select id="selectByUserIds" resultType="Tag">
-    SELECT id, name, user_id, created_time
-    FROM t_tag
+    SELECT id, name, user_id, create_time
+    FROM tag
     WHERE deleted = 0
     AND user_id IN
     <foreach collection="userIds" item="userId" open="(" separator="," close=")">
@@ -1059,7 +1062,7 @@ public PageResult<ReservationVO> pageReservations(ReservationQuery query) {
             .eq(query.getStatus() != null, Reservation::getStatus, query.getStatus())
             .ge(query.getStartTimeBegin() != null, Reservation::getStartTime, query.getStartTimeBegin())
             .le(query.getStartTimeEnd() != null, Reservation::getStartTime, query.getStartTimeEnd())
-            .orderByDesc(Reservation::getCreatedTime);
+            .orderByDesc(Reservation::getCreateTime);
     
     Page<Reservation> result = reservationMapper.selectPage(page, wrapper);
     
@@ -1084,8 +1087,8 @@ reservationService.saveBatch(reservations, 500); // 每批500条
 ```xml
 <!-- 【强制】禁止使用 SELECT * -->
 <select id="selectByCondition" resultType="Reservation">
-    SELECT id, user_id, seat_id, start_time, end_time, status, created_time
-    FROM t_reservation
+    SELECT id, user_id, seat_id, start_time, end_time, status, create_time
+    FROM reservation
     WHERE deleted = 0
     <if test="userId != null">
         AND user_id = #{userId}
@@ -1093,14 +1096,14 @@ reservationService.saveBatch(reservations, 500); // 每批500条
     <if test="status != null">
         AND status = #{status}
     </if>
-    ORDER BY created_time DESC
+    ORDER BY create_time DESC
 </select>
 
 <!-- 【强制】大表查询必须使用索引，避免全表扫描 -->
 <!-- 【强制】IN 查询元素数量不超过 1000 -->
 <select id="selectByIds" resultType="Reservation">
     SELECT id, user_id, seat_id, start_time, end_time, status
-    FROM t_reservation
+    FROM reservation
     WHERE deleted = 0
     AND id IN
     <foreach collection="ids" item="id" open="(" separator="," close=")">
@@ -1111,8 +1114,8 @@ reservationService.saveBatch(reservations, 500); // 每批500条
 <!-- 【强制】UPDATE/DELETE 必须带 WHERE 条件 -->
 <!-- 【注意】NOW() 是少数允许使用的函数，因为不影响索引 -->
 <update id="updateStatus">
-    UPDATE t_reservation
-    SET status = #{status}, updated_time = NOW()
+    UPDATE reservation
+    SET status = #{status}, update_time = NOW()
     WHERE id = #{id} AND deleted = 0
 </update>
 ```
