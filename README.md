@@ -458,27 +458,31 @@ docker-compose -f docker-deploys/compose-prod.yml up -d
    - 掌握 Vue 基础语法
    - 熟悉常用的 Vue 组件
    - 理解 Vue 的响应式原理
-2. **Element-Plus**
+2. **CSS 基础**
+   - 掌握 CSS 基础样式
+   - 熟悉常用的 CSS 布局
+   - 理解 CSS 的盒子模型
+3. **Element-Plus**
    - 了解 Element-Plus 框架
    - 掌握 Element-Plus 的基本使用
    - 熟悉 Element-Plus 的组件库
-3. **TypeScript**
+4. **TypeScript**
    - 了解 TypeScript 语言
    - 掌握 TypeScript 的基本语法
    - 熟悉 TypeScript 的类型系统
-4. **UniApp**
+5. **UniApp**
    - 了解 UniApp 框架
    - 掌握 UniApp 的基本使用
    - 熟悉 UniApp 的跨平台开发
-5. **微信小程序**
+6. **微信小程序**
    - 了解微信小程序开发
    - 掌握微信小程序的基本开发
    - 熟悉微信小程序的开发工具
-6. **性能优化**
+7. **性能优化**
    - 了解性能优化
    - 掌握性能优化的基本原理
    - 熟悉性能优化的解决方案
-7. **安全管理**
+8. **安全管理**
    - 了解安全管理
    - 掌握安全管理的基本原理
    - 熟悉安全管理的解决方案
