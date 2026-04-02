@@ -15,6 +15,7 @@
 | 7 | [安全开发规范](./security-spec.md) | 安全编码与漏洞防护规范 | 全栈开发 |
 | 8 | [测试规范](./testing-spec.md) | 单元测试与集成测试规范 | 全栈开发 |
 | 9 | [AI 助手模块开发方案](./ai-assistant-spec.md) | 基于 spring-ai-alibaba 的 AI 助手产品与技术落地方案 | 预约业务 / AI 能力建设 |
+| 10 | [AI 助手联调验收清单](./ai-assistant-acceptance-checklist.md) | AI 助手跨端联调、风控与发布前验收清单 | AI 助手发布验收 |
 
 ## 🎯 核心原则
 
